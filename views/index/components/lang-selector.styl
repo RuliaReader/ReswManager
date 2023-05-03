@@ -1,0 +1,26 @@
+.lang-selector
+  width: 300px
+  height: 100%
+  padding-right: 5px
+  overflow-x: hidden
+  overflow-y: auto
+  box-shadow: 0 0 10px 10px rgba(0, 0, 0, 0.1)
+
+  .lang-button
+    display: block
+    width: 100%
+    padding: 14px 10px
+    border: none
+    background-color: transparent
+    white-space: pre-line
+    word-wrap: break-word
+    text-align: left
+    cursor: pointer
+    border-radius: 0 40px 40px 0
+
+    &:active
+      transform: scale(.98)
+
+    &.selected
+      background-color: #d9ebe5
+      color: #1baf9e
