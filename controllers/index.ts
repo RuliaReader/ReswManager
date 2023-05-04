@@ -15,14 +15,10 @@ const initControllers = (app: Application) => {
     res.send(reswFileNameList)
   })
 
-  app.get('/file/:index', (req, res) => {
-    const fileIndex = parseInt(req.params.index)
-    if (isNaN(fileIndex)) {
-      return res.status(400).send('INCORRECT_PARAM')
-    }
-
+  app.get('/file/:filename', (req, res) => {
+    const filename = req.params.filename
     try {
-      const result = readReswFile(fileIndex)
+      const result = readReswFile(filename)
       res.send(result)
     } catch (error) {
       res.status(500).send(error)

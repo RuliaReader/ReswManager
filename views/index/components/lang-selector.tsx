@@ -7,18 +7,18 @@ import { useApp } from '../hooks/app'
 const LangSelector = defineComponent({
   setup () {
     const { fileListRef } = useFileList()
-    const { fileIndexRef, switchFile } = useApp()
+    const { filenameRef, switchFile } = useApp()
 
     return () => (
       <div class='lang-selector'>
         <div>
-          { fileListRef.value.map((item, index) => (
+          { fileListRef.value.map((item) => (
             <button
               class={[
                 'lang-button',
-                fileIndexRef.value === index ? 'selected' : null
+                filenameRef.value === item ? 'selected' : null
               ]}
-              onClick={() => switchFile(index)}
+              onClick={() => switchFile(item)}
             >{item}</button>
           )) }
         </div>

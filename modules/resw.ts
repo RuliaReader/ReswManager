@@ -10,7 +10,7 @@ const readStringFolder = () => {
   }
 }
 
-const readReswFile = (fileIndex: number): Record<string, string> => {
+const readReswFile = (filename: string): Record<string, string> => {
   const { paths: langFolderPaths, lang: langList } = readStringFolder()
   const result: Record<string, string> = {}
   langList.forEach(lang => {
@@ -19,14 +19,10 @@ const readReswFile = (fileIndex: number): Record<string, string> => {
 
   for (let i = 0; i < langFolderPaths.length; i++) {
     const langFolderPath = langFolderPaths[i]
-    const fileList = fs.readdirSync(langFolderPath)
-    const fileName = fileList[fileIndex]
-    if (fileName) {
-      const filePath = path.resolve(langFolderPath, fileName)
-      const fileText = fs.readFileSync(filePath, { encoding: 'utf-8' })
-      const lang = langList[i]
-      result[lang] = fileText
-    }
+    const filePath = path.resolve(langFolderPath, filename)
+    const fileText = fs.readFileSync(filePath, { encoding: 'utf-8' })
+    const lang = langList[i]
+    result[lang] = fileText
   }
 
   return result
