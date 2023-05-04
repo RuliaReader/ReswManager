@@ -183,66 +183,77 @@ const TableView = defineComponent({
       await loadFileContent(fileIndexRef.value)
     }
 
+    const PlaceHolder = () => (
+      <div class='table-view dp-flex align-center justify-center border-box'>Please select a file first.</div>
+    )
+
+    const ActionBar = () => (
+      <div>
+        <button onClick={onAddRecordButtonClick}>➕ Add new record</button>
+      </div>
+    )
+
+    const TableHeader = () => (
+      <thead>
+        <tr>
+          <td></td>
+          <td style='width: 10px'>Key</td>
+          { Object.keys(reswDataRef.value).map(lang => <td>{lang}</td>) }
+        </tr>
+      </thead>
+    )
+
+    const TableBody = () => (
+      <tbody>{
+        reswKeyList.value.map(key => (
+          <tr>
+            <td class='t-center'>
+              <button onClick={async event => {
+                const target = event.target as HTMLButtonElement
+                target.disabled = true
+                await removeKey(key as string)
+                target.disabled = false
+              }}>❌
+              </button>
+            </td>
+            <td>{key}</td>
+            {
+              langList.value.map(lang => (
+                <td>
+                  <textarea
+                    class='w-100'
+                    style='margin-top: 10px'
+                    value={getValue(lang, key as string)}
+                    onBlur={event => onTextareaBlur(event, lang, key as string)}
+                  />
+                </td>
+              ))
+            }
+          </tr>
+        ))
+      }</tbody>
+    )
+
     watch(fileIndexRef, async (fileIndex) => {
       await loadFileContent(fileIndex)
     })
 
-    const Content = () => {
+    return () => {
       if (fileIndexRef.value < 0) {
-        return <div class='table-view dp-flex align-center justify-center border-box'>Please select a file first.</div>
+        return <PlaceHolder />
       }
 
       return (
         <div class='table-view border-box over-auto'>
-          <div>
-            <button onClick={onAddRecordButtonClick}>➕ Add new record</button>
-          </div>
+          <ActionBar />
 
           <table class='data-table'>
-            <thead>
-              <tr>
-                <td></td>
-                <td style='width: 10px'>Key</td>
-                { Object.keys(reswDataRef.value).map(lang => <td>{lang}</td>) }
-              </tr>
-            </thead>
-            <tbody>
-              {
-                reswKeyList.value.map(key => (
-                  <tr>
-                    <td class='t-center'>
-                      <button onClick={async event => {
-                        const target = event.target as HTMLButtonElement
-                        target.disabled = true
-                        await removeKey(key as string)
-                        target.disabled = false
-                      }}>❌</button>
-                    </td>
-                    <td>{key}</td>
-                    {
-                      langList.value.map(lang => (
-                        <td>
-                          <textarea
-                            class='w-100'
-                            style='margin-top: 10px'
-                            value={getValue(lang, key as string)}
-                            onBlur={event => onTextareaBlur(event, lang, key as string)}
-                          />
-                        </td>
-                      ))
-                    }
-                  </tr>
-                ))
-              }
-            </tbody>
+            <TableHeader />
+            <TableBody />
           </table>
         </div>
       )
     }
-
-    return () => (
-      <Content />
-    )
   }
 })
 
