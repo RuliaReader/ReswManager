@@ -1,7 +1,9 @@
+import fs from 'fs'
 import { Application } from 'express'
+
 import { getTemplate } from '../modules/template'
 import { readReswFile, readStringFolder, writeReswFile } from '../modules/resw'
-import fs from 'fs'
+import { askGpt } from '../modules/openai'
 
 const initControllers = (app: Application) => {
   app.get('/', (req, res) => {
@@ -31,12 +33,32 @@ const initControllers = (app: Application) => {
       lang: string
       xmlStr: string
     }
-
     try {
       writeReswFile(body.filename, body.lang, body.xmlStr)
       res.send({
         message: 'OK'
       })
+    } catch (error) {
+      res.status(500).send(error)
+    }
+  })
+
+  app.post('/translate', async (req, res) => {
+    const body = req.body as {
+      text: string
+    }
+
+    const text = body.text
+    const { lang: langList } = readStringFolder()
+    let prompt = 'Translate this sentence into these languages and send me in json format:'
+    langList.forEach(lang => {
+      prompt += ` - ${lang}\n`
+    })
+    prompt += text
+
+    try {
+      const response = await askGpt(prompt)
+      res.json(JSON.parse(response))
     } catch (error) {
       res.status(500).send(error)
     }

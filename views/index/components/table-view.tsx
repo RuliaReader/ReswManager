@@ -3,6 +3,7 @@ import { defineComponent } from 'vue'
 import { useApp } from '../hooks/app'
 
 import './table-view.styl'
+import e from 'express'
 
 const TableView = defineComponent({
   name: 'TableView',
@@ -10,8 +11,8 @@ const TableView = defineComponent({
     const {
       filenameRef, reswDataRef,
       langList, reswKeyList,
-      loadFileContent, getValue, updateText, submitSingleLangChanges,
-      removeKey
+      getValue, updateText, submitSingleLangChanges,
+      removeKey, reload, translateKeyByGpt
     } = useApp()
 
     const onTextareaBlur = async (event: FocusEvent, lang: string, key: string) => {
@@ -49,7 +50,7 @@ const TableView = defineComponent({
         await submitSingleLangChanges(lang, filenameRef.value)
       }
 
-      await loadFileContent(filenameRef.value)
+      await reload()
     }
 
     const onRemoveButtonClick = async (event: Event, key: string) => {
@@ -59,6 +60,13 @@ const TableView = defineComponent({
       const target = event.target as HTMLButtonElement
       target.disabled = true
       await removeKey(key)
+      target.disabled = false
+    }
+
+    const onGptTranslationBtnClick = async (event: Event, key: string) => {
+      const target = event.target as HTMLButtonElement
+      target.disabled = true
+      await translateKeyByGpt(key)
       target.disabled = false
     }
 
@@ -87,8 +95,8 @@ const TableView = defineComponent({
         reswKeyList.value.map(key => (
           <tr>
             <td class='t-center'>
-              <button onClick={event => onRemoveButtonClick(event, key as string)}>❌
-              </button>
+              <button onClick={event => onRemoveButtonClick(event, key as string)}>❌</button>
+              <button onClick={event => onGptTranslationBtnClick(event, key as string)}>💡 Ask GPT</button>
             </td>
             <td>{key}</td>
             {

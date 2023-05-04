@@ -20,9 +20,13 @@ Please create a `.env` file:
 HOST=0.0.0.0
 PORT=3000
 STRING_FOLDER_PATH=C:\SOME_PATH\TO\YOUR\STRING\FOLDER
+OPEN_AI_KEY=YOUR_OPEN_AI_KEY
+OPEN_AI_ORG=YOUR_OEPN_AI_ORG_ID
 ```
 
 `STRING_FOLDER_PATH` points to the `Strings` folder in your .NET project.
+
+If you don't use the ChatGPT translation, you don't need to fill the OpenAI thing.
 
 ## Notice
 

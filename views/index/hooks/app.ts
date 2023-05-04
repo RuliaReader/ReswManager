@@ -22,6 +22,11 @@ const loadFileContent = async (filename: string) => {
   console.log(reswDataRef.value)
 }
 
+const reload = () => {
+  const filename = filenameRef.value
+  return loadFileContent(filename)
+}
+
 const langList = computed(() => {
   return Object.keys(reswDataRef.value)
 })
@@ -136,6 +141,30 @@ const removeKey = async (key: string) => {
   await loadFileContent(filenameRef.value)
 }
 
+const translateKeyByGpt = async (key: string) => {
+  const content = window.prompt('Please enter the text:')
+  if (!content) {
+    return
+  }
+
+  const result = await fetch('/translate', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      text: content
+    })
+  }).then(item => item.json() as Promise<Record<string, string>>)
+
+  for (const lang of Object.keys(result)) {
+    const value = result[lang]
+    await updateText(lang, key, value)
+  }
+
+  await reload()
+}
+
 const useApp = () => {
   return {
     filenameRef,
@@ -147,7 +176,9 @@ const useApp = () => {
     getValue,
     updateText,
     submitSingleLangChanges,
-    removeKey
+    removeKey,
+    reload,
+    translateKeyByGpt
   }
 }
 

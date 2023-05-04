@@ -36,6 +36,7 @@
     "json-loader": "^0.5.4",
     "mini-css-extract-plugin": "^2.6.0",
     "moment": "^2.18.1",
+    "openai": "^3.2.1",
     "postcss": "^8.4.12",
     "postcss-loader": "^6.2.1",
     "pug": "^2.0.4",
