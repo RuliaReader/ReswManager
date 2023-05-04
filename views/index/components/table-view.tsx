@@ -141,10 +141,6 @@ const TableView = defineComponent({
 
       return (
         <div class='table-view border-box over-auto'>
-          <div>
-            <button>➕ Add new record</button>
-          </div>
-
           <table class='data-table'>
             <thead>
             <tr>
