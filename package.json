@@ -9,8 +9,7 @@
   },
   "license": "Apache-2.0",
   "scripts": {
-    "dev": "cross-env NODE_ENV=development node -r @swc-node/register app.ts",
-    "prod": "cross-env NODE_ENV=production node -r @swc-node/register app.ts"
+    "start": "cross-env NODE_ENV=development node -r @swc-node/register app.ts"
   },
   "dependencies": {
     "@lancercomet/style": "^1.0.1",

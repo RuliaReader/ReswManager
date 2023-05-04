@@ -9,9 +9,8 @@ I hate managing resw.
 ## Usage
 
  - npm install
- - npm run dev
-
-> You may see there is the command `npm run prod` which is meaningless in this case. It just inherited from the template.
+ - Create a `.env` file and update its setting.
+ - npm start
 
 ## Env file
 
