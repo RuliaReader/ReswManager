@@ -1,9 +1,10 @@
 import { defineComponent } from 'vue'
 
 import { useApp } from '../hooks/app'
+import { GptResultSelector } from './gpt-result-selector'
+import { useGptResultSelector } from '../hooks/gpt-result-selector'
 
 import './table-view.styl'
-import e from 'express'
 
 const TableView = defineComponent({
   name: 'TableView',
@@ -12,8 +13,9 @@ const TableView = defineComponent({
       filenameRef, reswDataRef,
       langList, reswKeyList,
       getValue, updateText, submitSingleLangChanges,
-      removeKey, reload, translateKeyByGpt
+      removeKey, reload, getGptTranslation
     } = useApp()
+    const { isDisplayRef, translationRef, keyRef, openDialog, closeDialog } = useGptResultSelector()
 
     const onTextareaBlur = async (event: FocusEvent, lang: string, key: string) => {
       const target = event.target as HTMLTextAreaElement
@@ -66,8 +68,30 @@ const TableView = defineComponent({
     const onGptTranslationBtnClick = async (event: Event, key: string) => {
       const target = event.target as HTMLButtonElement
       target.disabled = true
-      await translateKeyByGpt(key)
+      const gptTranslation = await getGptTranslation()
       target.disabled = false
+
+      if (gptTranslation) {
+        openDialog(gptTranslation, key)
+      }
+    }
+
+    const onGptTranslationSelect = async (payload: {
+      lang: string
+      text: string
+      key: string
+    }) => {
+      await updateText(payload.lang, payload.key, payload.text)
+    }
+
+    const onGptTranslationTakeAll = async (payload: {
+      translation: Record<string, string>
+      key: string
+    }) => {
+      for (const lang of Object.keys(payload.translation)) {
+        const text = payload.translation[lang]
+        await updateText(lang, payload.key, text)
+      }
     }
 
     const PlaceHolder = () => (
@@ -129,6 +153,18 @@ const TableView = defineComponent({
             <TableHeader />
             <TableBody />
           </table>
+
+          {
+            isDisplayRef.value
+              ? <GptResultSelector
+                  translation={translationRef.value}
+                  currentKey={keyRef.value}
+                  onSelect={onGptTranslationSelect}
+                  onClose={closeDialog}
+                  onSelectAll={onGptTranslationTakeAll}
+                />
+              : undefined
+          }
         </div>
       )
     }

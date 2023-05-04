@@ -41,7 +41,8 @@ const webpackConfig: webpack.Configuration = {
       vue: 'vue/dist/vue.esm-bundler.js'
     },
     fallback: {
-      string_decoder: false
+      string_decoder: false,
+      stream: require.resolve('stream-browserify')
     }
   },
 

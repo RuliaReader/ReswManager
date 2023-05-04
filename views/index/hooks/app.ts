@@ -141,13 +141,13 @@ const removeKey = async (key: string) => {
   await loadFileContent(filenameRef.value)
 }
 
-const translateKeyByGpt = async (key: string) => {
+const getGptTranslation = async () => {
   const content = window.prompt('Please enter the text:')
   if (!content) {
     return
   }
 
-  const result = await fetch('/translate', {
+  return await fetch('/translate', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json'
@@ -156,13 +156,6 @@ const translateKeyByGpt = async (key: string) => {
       text: content
     })
   }).then(item => item.json() as Promise<Record<string, string>>)
-
-  for (const lang of Object.keys(result)) {
-    const value = result[lang]
-    await updateText(lang, key, value)
-  }
-
-  await reload()
 }
 
 const useApp = () => {
@@ -178,7 +171,7 @@ const useApp = () => {
     submitSingleLangChanges,
     removeKey,
     reload,
-    translateKeyByGpt
+    getGptTranslation
   }
 }
 

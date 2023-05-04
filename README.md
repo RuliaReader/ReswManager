@@ -34,16 +34,6 @@ If you don't use the ChatGPT translation, you don't need to fill the OpenAI thin
 
 This thing was poorly built. It was just designed for my UWP project and didn't have any further test.
 
-### Webpack warning
-
-Also there is a warning which says:
-
-```
-Module not found: Error: Can't resolve 'stream' in 'node_modules\sax\lib'
-```
-
-Never mind this. I am too tired to fix it. F**k JavaScript toolchain.
-
 ### File preparation
 
 You have to make sure file structure in every single lang folder are same.
