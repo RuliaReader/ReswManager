@@ -46,3 +46,5 @@ Never mind this. I am too tired to fix it. F**k JavaScript toolchain.
 You have to make sure file structure in every single lang folder are same.
 
 If not, create resw files first in Visual Studio and then come back.
+
+If you want to add a new language, just create that lang folder and copy resw files from some other language as templates then edit them in F-word. 
