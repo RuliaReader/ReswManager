@@ -4,11 +4,14 @@ import xmljs from 'xml-js'
 import { useApp } from '../hooks/app'
 
 import './table-view.styl'
+import { useFileList } from '../hooks/file-list'
 
 const TableView = defineComponent({
   name: 'TableView',
   setup () {
     const { fileIndexRef } = useApp()
+    const { fileListRef } = useFileList()
+
     const reswDataRef = ref<Record<string, xmljs.Element>>({})
 
     const loadFileContent = async (index: number) => {
@@ -61,42 +64,70 @@ const TableView = defineComponent({
 
     const updateText = (lang: string, key: string, value: string) => {
       const langObj = reswDataRef.value[lang]
-      const rootElement = langObj?.elements?.[0]
-      if (!rootElement) {
-        return
+      const rootElement = langObj?.elements?.[0] ?? {
+        elements: [],
+        name: 'root',
+        type: 'element'
       }
 
-      const dataElement = rootElement.elements
+      let dataElement = rootElement.elements
         ?.find(item => item.name === 'data' && item.attributes?.name === key)
+
       if (!dataElement) {
-        return
+        dataElement = {
+          attributes: { name: key, 'xml:space': 'preserve' },
+          elements: [],
+          name: 'data',
+          type: 'element'
+        }
+        rootElement?.elements?.push(dataElement)
       }
 
-      const valueElement = dataElement.elements?.[0]?.elements?.[0]
+      let valueElement = dataElement.elements?.[0]?.elements?.[0]
       if (!valueElement) {
-        return
+        valueElement = {
+          type: 'text',
+          text: value
+        }
+        dataElement?.elements?.push({
+          name: 'value',
+          type: 'element',
+          elements: [valueElement]
+        })
+      } else {
+        if (valueElement.text === value) {
+          return
+        }
+        valueElement.text = value
       }
 
-      const oldValue = valueElement.text
-      if (oldValue === value) {
-        return
-      }
-
-      console.log(dataElement, valueElement)
-
-      valueElement.text = value
-
-      // TODO: Update
-      return submitChanges(lang)
+      console.log(langObj)
+      const filename = fileListRef.value[fileIndexRef.value]
+      return submitSingleLangChanges(lang, filename)
     }
 
-    const submitChanges = async (lang: string) => {
+    const submitSingleLangChanges = async (lang: string, filename: string) => {
       const langObj = reswDataRef.value[lang]
-      const xmlStr = xmljs.js2xml(langObj)
-      const fileIndex = fileIndexRef.value
+      const xmlStr = xmljs.js2xml(langObj, {
+        spaces: 2
+      })
 
-      // TODO: ...
-      console.log(xmlStr)
+      try {
+        await fetch('/file/update', {
+          method: 'POST',
+          body: JSON.stringify({
+            filename,
+            lang,
+            xmlStr
+          }),
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        })
+      } catch (error) {
+        console.error(error)
+        alert('Exception! ' + (error as Error).message)
+      }
     }
 
     watch(fileIndexRef, async (fileIndex) => {
@@ -119,9 +150,7 @@ const TableView = defineComponent({
             <tr>
               <td style='width: 10px'></td>
               <td style='width: 10px'>Key</td>
-              {
-                Object.keys(reswDataRef.value).map(lang => <td>{lang}</td>)
-              }
+              { Object.keys(reswDataRef.value).map(lang => <td>{lang}</td>) }
             </tr>
             </thead>
             <tbody>

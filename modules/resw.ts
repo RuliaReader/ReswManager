@@ -3,7 +3,7 @@ import fs from 'fs'
 import { STRING_FOLDER_PATH } from '../config/app-config'
 
 const readStringFolder = () => {
-  const folders = fs.readdirSync(STRING_FOLDER_PATH)  // ['en-US', ...]
+  const folders = fs.readdirSync(STRING_FOLDER_PATH) // ['en-US', ...]
   return {
     lang: folders,
     paths: folders.map(item => path.resolve(STRING_FOLDER_PATH, item))
@@ -32,7 +32,17 @@ const readReswFile = (fileIndex: number): Record<string, string> => {
   return result
 }
 
+const writeReswFile = (filename: string, lang: string, xmlStr: string) => {
+  const langFolderPath = path.resolve(STRING_FOLDER_PATH, lang)
+  if (!fs.existsSync(langFolderPath)) {
+    fs.mkdirSync(langFolderPath)
+  }
+  const filePath = path.resolve(langFolderPath, filename)
+  fs.writeFileSync(filePath, xmlStr, { encoding: 'utf-8' })
+}
+
 export {
   readStringFolder,
-  readReswFile
+  readReswFile,
+  writeReswFile
 }

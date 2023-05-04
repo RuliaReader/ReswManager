@@ -1,11 +1,3 @@
-/**
- *  Express-Typescript Template.
- *  Server Entry.
- *
- *  @author LancerComet
- *  @license MIT
- */
-
 import 'dotenv/config'
 
 import * as http from 'http'
