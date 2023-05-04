@@ -52,6 +52,16 @@ const TableView = defineComponent({
       await loadFileContent(filenameRef.value)
     }
 
+    const onRemoveButtonClick = async (event: Event, key: string) => {
+      if (!window.confirm(`You are going to remove "${key}"`)) {
+        return
+      }
+      const target = event.target as HTMLButtonElement
+      target.disabled = true
+      await removeKey(key)
+      target.disabled = false
+    }
+
     const PlaceHolder = () => (
       <div class='table-view dp-flex align-center justify-center border-box'>Please select a file first.</div>
     )
@@ -77,12 +87,7 @@ const TableView = defineComponent({
         reswKeyList.value.map(key => (
           <tr>
             <td class='t-center'>
-              <button onClick={async event => {
-                const target = event.target as HTMLButtonElement
-                target.disabled = true
-                await removeKey(key as string)
-                target.disabled = false
-              }}>❌
+              <button onClick={event => onRemoveButtonClick(event, key as string)}>❌
               </button>
             </td>
             <td>{key}</td>
