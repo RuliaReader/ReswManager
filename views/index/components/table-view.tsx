@@ -2,9 +2,9 @@ import { computed, defineComponent, ref, watch } from 'vue'
 import xmljs from 'xml-js'
 
 import { useApp } from '../hooks/app'
+import { useFileList } from '../hooks/file-list'
 
 import './table-view.styl'
-import { useFileList } from '../hooks/file-list'
 
 const TableView = defineComponent({
   name: 'TableView',
@@ -31,6 +31,10 @@ const TableView = defineComponent({
       return Object.keys(reswDataRef.value)
     })
 
+    const currentFilename = computed(() => {
+      return fileListRef.value[fileIndexRef.value]
+    })
+
     const reswKeyList = computed(() => {
       const firstLang = Object.keys(reswDataRef.value)[0]
       const firstLangObj = reswDataRef.value[firstLang]
@@ -42,7 +46,7 @@ const TableView = defineComponent({
       const dataElement = rootElement.elements
         ?.filter(item => item.name === 'data') ?? []
 
-      return dataElement.map(item => item.attributes?.name ?? '<UNAVAILABLE>')
+      return dataElement.map(item => item.attributes?.name ?? '')
     })
 
     const getValue = (lang: string, key: string): string => {
@@ -58,7 +62,7 @@ const TableView = defineComponent({
         return ''
       }
 
-      const value = dataElement.elements?.[0]?.elements?.[0]?.text ?? '<UNAVAILABLE>'
+      const value = dataElement.elements?.[0]?.elements?.[0]?.text ?? ''
       return value as string
     }
 
@@ -101,9 +105,7 @@ const TableView = defineComponent({
         valueElement.text = value
       }
 
-      console.log(langObj)
-      const filename = fileListRef.value[fileIndexRef.value]
-      return submitSingleLangChanges(lang, filename)
+      return submitSingleLangChanges(lang, currentFilename.value)
     }
 
     const submitSingleLangChanges = async (lang: string, filename: string) => {
@@ -130,6 +132,57 @@ const TableView = defineComponent({
       }
     }
 
+    const onTextareaBlur = async (event: FocusEvent, lang: string, key: string) => {
+      const target = event.target as HTMLTextAreaElement
+      const newValue = target.value.trim()
+      target.disabled = true
+      await updateText(lang, key, newValue)
+      target.disabled = false
+    }
+
+    const onAddRecordButtonClick = async () => {
+      const key = window.prompt('Please provide a key:')
+      if (!key) {
+        return
+      }
+
+      for (const lang of Object.keys(reswDataRef.value)) {
+        const langObj = reswDataRef.value[lang]
+        langObj.elements?.[0]?.elements?.push({
+          attributes: {
+            name: key,
+            'xml:space': 'preserve'
+          },
+          elements: [{
+            type: 'element',
+            name: 'value',
+            elements: [
+              { type: 'text', text: 'Put your text here' }
+            ]
+          }],
+          name: 'data',
+          type: 'element'
+        })
+
+        await submitSingleLangChanges(lang, currentFilename.value)
+      }
+
+      await loadFileContent(fileIndexRef.value)
+    }
+
+    const removeKey = async (key: string) => {
+      for (const lang of Object.keys(reswDataRef.value)) {
+        const langObj = reswDataRef.value[lang]
+        const targetIndex = langObj.elements?.[0]?.elements?.findIndex(item => item.attributes?.name === key) ?? -1
+        if (targetIndex > -1) {
+          langObj.elements?.[0]?.elements?.splice(targetIndex, 1)
+        }
+        await submitSingleLangChanges(lang, currentFilename.value)
+      }
+
+      await loadFileContent(fileIndexRef.value)
+    }
+
     watch(fileIndexRef, async (fileIndex) => {
       await loadFileContent(fileIndex)
     })
@@ -141,20 +194,29 @@ const TableView = defineComponent({
 
       return (
         <div class='table-view border-box over-auto'>
+          <div>
+            <button onClick={onAddRecordButtonClick}>➕ Add new record</button>
+          </div>
+
           <table class='data-table'>
             <thead>
-            <tr>
-              <td style='width: 10px'></td>
-              <td style='width: 10px'>Key</td>
-              { Object.keys(reswDataRef.value).map(lang => <td>{lang}</td>) }
-            </tr>
+              <tr>
+                <td></td>
+                <td style='width: 10px'>Key</td>
+                { Object.keys(reswDataRef.value).map(lang => <td>{lang}</td>) }
+              </tr>
             </thead>
             <tbody>
               {
                 reswKeyList.value.map(key => (
                   <tr>
-                    <td>
-                      <button>❌</button>
+                    <td class='t-center'>
+                      <button onClick={async event => {
+                        const target = event.target as HTMLButtonElement
+                        target.disabled = true
+                        await removeKey(key as string)
+                        target.disabled = false
+                      }}>❌</button>
                     </td>
                     <td>{key}</td>
                     {
@@ -164,13 +226,7 @@ const TableView = defineComponent({
                             class='w-100'
                             style='margin-top: 10px'
                             value={getValue(lang, key as string)}
-                            onBlur={async event => {
-                              const target = event.target as HTMLTextAreaElement
-                              const newValue = target.value.trim()
-                              target.disabled = true
-                              await updateText(lang, key as string, newValue)
-                              target.disabled = false
-                            }}
+                            onBlur={event => onTextareaBlur(event, lang, key as string)}
                           />
                         </td>
                       ))

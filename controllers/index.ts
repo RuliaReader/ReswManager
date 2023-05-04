@@ -4,7 +4,7 @@ import { readReswFile, readStringFolder, writeReswFile } from '../modules/resw'
 import fs from 'fs'
 
 const initControllers = (app: Application) => {
-  app.get('/', (req, res, next) => {
+  app.get('/', (req, res) => {
     res.send(getTemplate('index'))
   })
 
@@ -29,7 +29,7 @@ const initControllers = (app: Application) => {
     }
   })
 
-  app.post('/file/update', (req, res, next) => {
+  app.post('/file/update', (req, res) => {
     const body = req.body as {
       filename: string
       lang: string
