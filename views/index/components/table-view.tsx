@@ -94,6 +94,27 @@ const TableView = defineComponent({
       }
     }
 
+    const onKeyEditButtonClicked = async (key: string) => {
+      const newKey = window.prompt('Please provide a new key:')
+      if (!newKey) {
+        return
+      }
+
+      for (const lang of Object.keys(reswDataRef.value)) {
+        const langObj = reswDataRef.value[lang]
+        const rootElement = langObj?.elements?.[0]
+        const dataElement = rootElement?.elements
+          ?.find(item => item.name === 'data' && item.attributes?.name === key)
+        if (dataElement && dataElement.attributes) {
+          dataElement.attributes.name = newKey
+        }
+
+        await submitSingleLangChanges(lang, filenameRef.value)
+      }
+
+      await reload()
+    }
+
     const PlaceHolder = () => (
       <div class='table-view dp-flex align-center justify-center border-box'>Please select a file first.</div>
     )
@@ -118,11 +139,18 @@ const TableView = defineComponent({
       <tbody>{
         reswKeyList.value.map(key => (
           <tr>
-            <td class='t-center'>
-              <button onClick={event => onRemoveButtonClick(event, key as string)}>❌</button>
-              <button onClick={event => onGptTranslationBtnClick(event, key as string)}>💡 Ask GPT</button>
+            <td style='width: 10px'>
+              <div class='dp-flex align-center justify-center'>
+                <button onClick={event => onRemoveButtonClick(event, key as string)}>❌</button>
+                <button onClick={event => onGptTranslationBtnClick(event, key as string)}>💡 Ask GPT</button>
+              </div>
             </td>
-            <td>{key}</td>
+            <td>
+              <div class='dp-flex flex-column align-center justify-center'>
+                <span>{key}</span>
+                <button onClick={() => onKeyEditButtonClicked(key as string)}>Edit</button>
+              </div>
+            </td>
             {
               langList.value.map(lang => (
                 <td>
