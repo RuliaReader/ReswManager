@@ -116,12 +116,17 @@ const TableView = defineComponent({
     }
 
     const PlaceHolder = () => (
-      <div class='table-view dp-flex align-center justify-center border-box'>Please select a file first.</div>
+      <div class='table-view dp-flex align-center justify-center'>
+        <div class='t-center'>
+          <h1>F-word to Resw.</h1>
+          <p>Please select a file first.</p>
+        </div>
+      </div>
     )
 
     const ActionBar = () => (
-      <div>
-        <button onClick={onAddRecordButtonClick}>➕ Add new record</button>
+      <div class='action-bar'>
+        <button class='add-button' onClick={onAddRecordButtonClick}>➕</button>
       </div>
     )
 
@@ -174,7 +179,11 @@ const TableView = defineComponent({
       }
 
       return (
-        <div class='table-view border-box over-auto'>
+        <div class='table-view over-auto'>
+          <div>
+            <h2>{filenameRef.value}</h2>
+          </div>
+
           <ActionBar />
 
           <table class='data-table'>

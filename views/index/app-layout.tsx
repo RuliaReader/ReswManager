@@ -7,9 +7,12 @@ const AppLayout = defineComponent({
 
   setup () {
     return () => (
-      <div class='app-container dp-flex p-absolute p-zero'>
-        <LangSelector />
-        <TableView />
+      <div class='app-container dp-flex flex-column p-absolute p-zero'>
+        {/* <div class='app-title-bar'>ACTION_BAR</div> */}
+        <div class='main-content dp-flex over-hidden'>
+          <LangSelector />
+          <TableView />
+        </div>
       </div>
     )
   }

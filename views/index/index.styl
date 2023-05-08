@@ -2,6 +2,25 @@ body
   margin: 0
   font-size: 13px
 
+button
+  padding: 6px 10px
+  border: 0
+  background-color: #d9ebe5
+  color: #177693
+  cursor: pointer
+
+  &:active
+    transform: scale(.98)
+
+  &:disabled
+    opacity: .5
+
 .app-container
   width: 100vw
   height: 100vh
+
+  .app-title-bar
+    background-color: gray
+
+  .main-content
+    flex-grow: 1
