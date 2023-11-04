@@ -1,4 +1,4 @@
-# F word to Resw
+# Resw Manager
 
 ![screenshot](screenshot.jpg)
 
