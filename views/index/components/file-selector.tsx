@@ -4,7 +4,7 @@ import './lang-selector.styl'
 import { useFileList } from '../hooks/file-list'
 import { useApp } from '../hooks/app'
 
-const LangSelector = defineComponent({
+const FileSelector = defineComponent({
   setup () {
     const { fileListRef } = useFileList()
     const { filenameRef, switchFile } = useApp()
@@ -28,5 +28,5 @@ const LangSelector = defineComponent({
 })
 
 export {
-  LangSelector
+  FileSelector
 }

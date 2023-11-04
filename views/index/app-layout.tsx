@@ -1,5 +1,5 @@
 import { defineComponent } from 'vue'
-import { LangSelector } from './components/lang-selector'
+import { FileSelector } from './components/file-selector'
 import { TableView } from './components/table-view'
 
 const AppLayout = defineComponent({
@@ -10,7 +10,7 @@ const AppLayout = defineComponent({
       <div class='app-container dp-flex flex-column p-absolute p-zero'>
         {/* <div class='app-title-bar'>ACTION_BAR</div> */}
         <div class='main-content dp-flex over-hidden'>
-          <LangSelector />
+          <FileSelector />
           <TableView />
         </div>
       </div>

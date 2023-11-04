@@ -76,6 +76,19 @@ const TableView = defineComponent({
       }
     }
 
+    const onCopyKeyButtonClick = (key: string) => {
+      const filename = filenameRef.value
+      const fileKey = filename.trim().replace('.resw', '')
+      const fullKey = `/${fileKey}/${key}`
+      navigator.clipboard.writeText(fullKey)
+        .then(() => {
+          // ...
+        })
+        .catch(error => {
+          console.error(error)
+        })
+    }
+
     const onGptTranslationSelect = async (payload: {
       lang: string
       text: string
@@ -153,7 +166,10 @@ const TableView = defineComponent({
             <td>
               <div class='dp-flex flex-column align-center justify-center'>
                 <span>{key}</span>
-                <button onClick={() => onKeyEditButtonClicked(key as string)}>Edit</button>
+                <div class='t-center' style='margin-top: 5px'>
+                  <button onClick={() => onKeyEditButtonClicked(key as string)}>Edit</button>
+                  <button onClick={() => onCopyKeyButtonClick(key as string)}>📋 Copy Key</button>
+                </div>
               </div>
             </td>
             {
